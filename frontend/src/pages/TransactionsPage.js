@@ -133,17 +133,125 @@ const TransactionsPage = () => {
     <div className="space-y-6" data-testid="transactions-page">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-slate-900">Kasa Yönetimi</h2>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700" data-testid="add-transaction-btn">
-              <Plus size={18} className="mr-2" />
-              Yeni İşlem
-            </Button>
-          </DialogTrigger>
-          <DialogContent data-testid="transaction-dialog">
-            <DialogHeader>
-              <DialogTitle>Yeni İşlem Ekle</DialogTitle>
-            </DialogHeader>
+        <div className="flex gap-3">
+          <Button 
+            className="bg-green-600 hover:bg-green-700" 
+            onClick={() => {
+              setTransactionType('gelir');
+              setFormData({ ...formData, type: 'gelir' });
+              setDialogOpen(true);
+            }}
+            data-testid="add-income-btn"
+          >
+            <TrendingUp size={18} className="mr-2" />
+            Gelir Ekle
+          </Button>
+          <Button 
+            className="bg-red-600 hover:bg-red-700"
+            onClick={() => {
+              setTransactionType('gider');
+              setFormData({ ...formData, type: 'gider' });
+              setDialogOpen(true);
+            }}
+            data-testid="add-expense-btn"
+          >
+            <TrendingDown size={18} className="mr-2" />
+            Gider Ekle
+          </Button>
+        </div>
+      </div>
+
+      {/* Enhanced Balance Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Toplam Gelir</h3>
+            <TrendingUp size={24} />
+          </div>
+          <p className="text-3xl font-bold" data-testid="total-income-card">{balance.totalIncome.toFixed(2)} ₺</p>
+        </div>
+        
+        <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Toplam Gider</h3>
+            <TrendingDown size={24} />
+          </div>
+          <p className="text-3xl font-bold" data-testid="total-expense-card">{balance.totalExpense.toFixed(2)} ₺</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Nakit</h3>
+            <Banknote size={24} />
+          </div>
+          <p className="text-3xl font-bold" data-testid="cash-balance-card">{balance.cashBalance.toFixed(2)} ₺</p>
+        </div>
+        
+        <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-lg p-6 text-white">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">POS</h3>
+            <CreditCard size={24} />
+          </div>
+          <p className="text-3xl font-bold" data-testid="pos-balance-card">{balance.posBalance.toFixed(2)} ₺</p>
+        </div>
+        
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white border-2 border-white">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold">NET BAKIYE</h3>
+            <TrendingUp size={24} />
+          </div>
+          <p className="text-4xl font-bold" data-testid="total-balance-card">{balance.total.toFixed(2)} ₺</p>
+          <p className="text-xs opacity-90 mt-1">Nakit + POS</p>
+        </div>
+      </div>
+
+      {/* Income vs Expense Visual */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
+          <h3 className="text-lg font-bold text-green-700 mb-3 flex items-center gap-2">
+            <TrendingUp size={20} />
+            Gelirler
+          </h3>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+              <span className="text-sm text-green-900">Toplam</span>
+              <span className="text-2xl font-bold text-green-700">{balance.totalIncome.toFixed(2)} ₺</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-red-500">
+          <h3 className="text-lg font-bold text-red-700 mb-3 flex items-center gap-2">
+            <TrendingDown size={20} />
+            Giderler
+          </h3>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+              <span className="text-sm text-red-900">Toplam</span>
+              <span className="text-2xl font-bold text-red-700">{balance.totalExpense.toFixed(2)} ₺</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent data-testid="transaction-dialog">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {transactionType === 'gelir' ? (
+                <>
+                  <TrendingUp className="text-green-600" />
+                  <span>Gelir Ekle</span>
+                </>
+              ) : (
+                <>
+                  <TrendingDown className="text-red-600" />
+                  <span>Gider Ekle</span>
+                </>
+              )}
+            </DialogTitle>
+          </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="type">İşlem Türü *</Label>
