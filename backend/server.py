@@ -55,6 +55,15 @@ async def root():
 async def health_check():
     return {"status": "healthy", "service": "opensoftt-muhasebe"}
 
+@api_router.get("/debug/config")
+async def debug_config():
+    """Debug endpoint to check configuration"""
+    return {
+        "cors_origins": os.environ.get('CORS_ORIGINS', 'not set'),
+        "db_name": os.environ.get('DB_NAME', 'not set'),
+        "backend_running": True
+    }
+
 # Models
 class User(BaseModel):
     model_config = ConfigDict(extra="ignore")
