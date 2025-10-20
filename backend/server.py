@@ -64,6 +64,29 @@ async def debug_config():
         "backend_running": True
     }
 
+@api_router.post("/debug/init-admin")
+async def force_init_admin():
+    """Force admin user creation - for troubleshooting"""
+    try:
+        admin_exists = await db.users.find_one({"username": "admin"})
+        if admin_exists:
+            return {"message": "Admin user already exists", "username": "admin"}
+        
+        hashed_password = pwd_context.hash("admin123")
+        admin_user = User(
+            username="admin",
+            password=hashed_password,
+            role="admin"
+        )
+        doc = admin_user.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        await db.users.insert_one(doc)
+        
+        return {"message": "Admin user created successfully", "username": "admin", "password": "admin123"}
+    except Exception as e:
+        logging.error(f"Failed to create admin: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create admin: {str(e)}")
+
 # Models
 class User(BaseModel):
     model_config = ConfigDict(extra="ignore")
