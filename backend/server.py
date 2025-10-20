@@ -486,11 +486,39 @@ async def make_partial_payment(request: PartialPaymentRequest):
         {"$set": update_data}
     )
     
+    # AUTOMATICALLY ADD TO KASA (CASH TRANSACTIONS)
+    # When we pay a debt (borc), it's an expense (gider) from our cash
+    if payment['payment_type'] == 'borc':
+        # Borç ödedik = Kasadan gider
+        transaction = Transaction(
+            type='gider',
+            payment_method='nakit',
+            amount=request.amount,
+            description=f"{payment['customer_name']} - Borç ödemesi (Ödeme ID: {request.payment_id[:8]})"
+        )
+        doc = transaction.model_dump()
+        doc['transaction_date'] = doc['transaction_date'].isoformat()
+        doc['created_at'] = doc['created_at'].isoformat()
+        await db.transactions.insert_one(doc)
+    elif payment['payment_type'] == 'alacak':
+        # Alacak tahsil ettik = Kasaya gelir
+        transaction = Transaction(
+            type='gelir',
+            payment_method='nakit',
+            amount=request.amount,
+            description=f"{payment['customer_name']} - Alacak tahsilatı (Ödeme ID: {request.payment_id[:8]})"
+        )
+        doc = transaction.model_dump()
+        doc['transaction_date'] = doc['transaction_date'].isoformat()
+        doc['created_at'] = doc['created_at'].isoformat()
+        await db.transactions.insert_one(doc)
+    
     return {
-        "message": "Ödeme kaydedildi",
+        "message": "Ödeme kaydedildi ve kasaya yansıtıldı",
         "paid_amount": new_paid,
         "remaining": payment['amount'] - new_paid,
-        "is_fully_paid": is_fully_paid
+        "is_fully_paid": is_fully_paid,
+        "cash_transaction_created": True
     }
 
 @api_router.put("/payments/{payment_id}", response_model=Payment)
