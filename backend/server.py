@@ -112,6 +112,7 @@ class Payment(BaseModel):
     customer_id: str
     customer_name: str
     amount: float
+    paid_amount: float = 0.0
     payment_type: str  # "alacak" or "borc"
     is_paid: bool = False
     payment_date: Optional[datetime] = None
@@ -128,6 +129,18 @@ class PaymentCreate(BaseModel):
     payment_date: Optional[datetime] = None
     due_date: datetime
     description: Optional[str] = None
+
+class PaymentUpdate(BaseModel):
+    amount: Optional[float] = None
+    paid_amount: Optional[float] = None
+    is_paid: Optional[bool] = None
+    payment_date: Optional[datetime] = None
+    due_date: Optional[datetime] = None
+    description: Optional[str] = None
+
+class PartialPaymentRequest(BaseModel):
+    payment_id: str
+    amount: float
 
 class Transaction(BaseModel):
     model_config = ConfigDict(extra="ignore")
