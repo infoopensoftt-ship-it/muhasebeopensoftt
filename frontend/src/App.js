@@ -119,7 +119,7 @@ function App() {
             element={
               isAuthenticated ? (
                 <Layout user={user} onLogout={handleLogout}>
-                  <ReportsPage />
+                  <ReportsPageEnhanced />
                 </Layout>
               ) : (
                 <Navigate to="/login" replace />
