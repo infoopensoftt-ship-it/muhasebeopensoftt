@@ -392,6 +392,39 @@ async def create_payment(payment_data: PaymentCreate):
     await db.payments.insert_one(doc)
     return payment
 
+@api_router.post("/payments/partial-payment")
+async def make_partial_payment(request: PartialPaymentRequest):
+    """Make a partial payment on a debt"""
+    payment = await db.payments.find_one({"id": request.payment_id}, {"_id": 0})
+    if not payment:
+        raise HTTPException(status_code=404, detail="Ödeme bulunamadı")
+    
+    current_paid = payment.get('paid_amount', 0)
+    new_paid = current_paid + request.amount
+    
+    # Check if fully paid
+    is_fully_paid = new_paid >= payment['amount']
+    
+    update_data = {
+        "paid_amount": new_paid,
+        "is_paid": is_fully_paid
+    }
+    
+    if is_fully_paid:
+        update_data["payment_date"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.payments.update_one(
+        {"id": request.payment_id},
+        {"$set": update_data}
+    )
+    
+    return {
+        "message": "Ödeme kaydedildi",
+        "paid_amount": new_paid,
+        "remaining": payment['amount'] - new_paid,
+        "is_fully_paid": is_fully_paid
+    }
+
 @api_router.put("/payments/{payment_id}", response_model=Payment)
 async def update_payment(payment_id: str, payment_data: PaymentCreate):
     existing = await db.payments.find_one({"id": payment_id})
