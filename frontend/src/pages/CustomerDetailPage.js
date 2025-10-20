@@ -320,6 +320,57 @@ const CustomerDetailPage = () => {
           </div>
         )}
       </div>
+
+      {/* Payment Dialog */}
+      <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
+        <DialogContent data-testid="payment-dialog">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CreditCard className="text-green-600" />
+              Ödeme Yap
+            </DialogTitle>
+          </DialogHeader>
+          {selectedPayment && (
+            <form onSubmit={handleMakePayment} className="space-y-4">
+              <div className="bg-slate-50 p-4 rounded-lg space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-600">Toplam Borç:</span>
+                  <span className="font-bold text-slate-900">{selectedPayment.amount.toFixed(2)} ₺</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-600">Ödenen:</span>
+                  <span className="font-bold text-green-600">{(selectedPayment.paid_amount || 0).toFixed(2)} ₺</span>
+                </div>
+                <div className="flex justify-between border-t pt-2">
+                  <span className="text-sm font-semibold text-slate-900">Kalan:</span>
+                  <span className="font-bold text-red-600">
+                    {(selectedPayment.amount - (selectedPayment.paid_amount || 0)).toFixed(2)} ₺
+                  </span>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="payment_amount">Ödeme Tutarı (₺) *</Label>
+                <Input
+                  id="payment_amount"
+                  type="number"
+                  step="0.01"
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                  placeholder="0.00"
+                  max={selectedPayment.amount - (selectedPayment.paid_amount || 0)}
+                  data-testid="payment-amount-input"
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  Maksimum: {(selectedPayment.amount - (selectedPayment.paid_amount || 0)).toFixed(2)} ₺
+                </p>
+              </div>
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" data-testid="confirm-payment-btn">
+                Ödemeyi Kaydet
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
