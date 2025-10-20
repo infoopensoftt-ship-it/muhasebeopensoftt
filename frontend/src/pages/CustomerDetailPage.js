@@ -240,52 +240,81 @@ const CustomerDetailPage = () => {
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Eklenme Tarihi</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Tür</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Tutar</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Ödenen</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Kalan</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Vade</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Durum</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Açıklama</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">İşlem</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {payments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 text-sm text-slate-900 font-semibold">
-                      <div className="flex items-center gap-1">
-                        <Calendar size={14} className="text-blue-600" />
-                        {format(new Date(payment.created_at), 'dd MMM yyyy HH:mm', { locale: tr })}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        payment.payment_type === 'alacak' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                      }`}>
-                        {payment.payment_type === 'alacak' ? 'Alacak' : 'Borç'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm font-semibold text-slate-900">
-                      {payment.amount.toFixed(2)} ₺
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-600">
-                      <div className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        {format(new Date(payment.due_date), 'dd MMM yyyy', { locale: tr })}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {payment.is_paid ? (
-                        <span className="flex items-center gap-1 text-green-600 text-sm">
-                          <CheckCircle size={16} />
-                          Ödendi
+                {payments.map((payment) => {
+                  const paidAmount = payment.paid_amount || 0;
+                  const remaining = payment.amount - paidAmount;
+                  
+                  return (
+                    <tr key={payment.id} className="hover:bg-slate-50">
+                      <td className="px-6 py-4 text-sm text-slate-900 font-semibold">
+                        <div className="flex items-center gap-1">
+                          <Calendar size={14} className="text-blue-600" />
+                          {format(new Date(payment.created_at), 'dd MMM yyyy HH:mm', { locale: tr })}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          payment.payment_type === 'alacak' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        }`}>
+                          {payment.payment_type === 'alacak' ? 'Alacak' : 'Borç'}
                         </span>
-                      ) : (
-                        <span className="flex items-center gap-1 text-orange-600 text-sm">
-                          <XCircle size={16} />
-                          Bekliyor
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{payment.description || '-'}</td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-4 text-sm font-semibold text-slate-900">
+                        {payment.amount.toFixed(2)} ₺
+                      </td>
+                      <td className="px-6 py-4 text-sm font-semibold text-green-600">
+                        {paidAmount.toFixed(2)} ₺
+                      </td>
+                      <td className="px-6 py-4 text-sm font-semibold text-red-600">
+                        {remaining.toFixed(2)} ₺
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600">
+                        <div className="flex items-center gap-1">
+                          <Calendar size={14} />
+                          {format(new Date(payment.due_date), 'dd MMM yyyy', { locale: tr })}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {payment.is_paid ? (
+                          <span className="flex items-center gap-1 text-green-600 text-sm">
+                            <CheckCircle size={16} />
+                            Ödendi
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1 text-orange-600 text-sm">
+                            <XCircle size={16} />
+                            {remaining > 0 && paidAmount > 0 ? 'Kısmi' : 'Bekliyor'}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600">{payment.description || '-'}</td>
+                      <td className="px-6 py-4">
+                        {payment.payment_type === 'borc' && remaining > 0 && (
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => {
+                              setSelectedPayment(payment);
+                              setPaymentDialogOpen(true);
+                            }}
+                            data-testid="make-payment-btn"
+                          >
+                            Ödeme Yap
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
