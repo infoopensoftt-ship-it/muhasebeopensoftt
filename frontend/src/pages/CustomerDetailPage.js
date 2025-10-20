@@ -171,8 +171,8 @@ const CustomerDetailPage = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg p-6 text-white">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
           <h3 className="text-sm opacity-90 mb-2">Toplam Borç</h3>
           <p className="text-3xl font-bold" data-testid="total-debt">
             {summary.total_debt.toFixed(2)} ₺
@@ -184,7 +184,13 @@ const CustomerDetailPage = () => {
             {summary.total_paid.toFixed(2)} ₺
           </p>
         </div>
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
+        <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg p-6 text-white">
+          <h3 className="text-sm opacity-90 mb-2">Kalan Borç</h3>
+          <p className="text-3xl font-bold" data-testid="total-remaining">
+            {summary.total_remaining.toFixed(2)} ₺
+          </p>
+        </div>
+        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
           <h3 className="text-sm opacity-90 mb-2">Toplam İşlem</h3>
           <p className="text-3xl font-bold" data-testid="total-transactions">
             {summary.total_payments} Adet
