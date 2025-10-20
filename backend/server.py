@@ -35,7 +35,9 @@ async def test_db_connection():
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-SECRET_KEY = os.environ.get('SECRET_KEY', 'opensoftt-dev-secret-key')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'opensoftt-default-secret-key-change-in-production')
+if SECRET_KEY == 'opensoftt-default-secret-key-change-in-production':
+    logging.warning("WARNING: Using default SECRET_KEY. Set SECRET_KEY environment variable in production!")
 ALGORITHM = "HS256"
 
 # Create the main app without a prefix
