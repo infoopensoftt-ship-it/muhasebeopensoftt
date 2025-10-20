@@ -215,7 +215,10 @@ const CustomersPage = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => handleEdit(customer)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(customer);
+                    }}
                     data-testid="edit-customer-btn"
                   >
                     <Edit size={16} />
@@ -224,13 +227,37 @@ const CustomersPage = () => {
                     size="sm"
                     variant="outline"
                     className="text-red-600 hover:text-red-700"
-                    onClick={() => handleDelete(customer.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(customer.id);
+                    }}
                     data-testid="delete-customer-btn"
                   >
                     <Trash2 size={16} />
                   </Button>
                 </div>
               </div>
+
+              {/* Borç/Alacak Özeti */}
+              {customerSummaries[customer.id] && (
+                <div className="mb-3 p-3 bg-slate-50 rounded-lg">
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <p className="text-slate-500 text-xs">Borç</p>
+                      <p className="font-bold text-red-600" data-testid="customer-debt">
+                        {customerSummaries[customer.id].total_debt.toFixed(2)} ₺
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-slate-500 text-xs">Ödenen</p>
+                      <p className="font-bold text-green-600" data-testid="customer-paid">
+                        {customerSummaries[customer.id].total_paid.toFixed(2)} ₺
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2 text-sm">
                 {customer.phone && (
                   <div className="flex items-center gap-2 text-slate-600">
