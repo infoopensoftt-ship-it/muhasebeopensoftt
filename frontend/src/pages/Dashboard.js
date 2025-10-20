@@ -3,9 +3,7 @@ import axios from 'axios';
 import { TrendingUp, TrendingDown, Users, Wallet, Clock, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API } from '../config';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
