@@ -34,6 +34,15 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Add your routes to the router instead of directly to app
+@api_router.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+@api_router.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "opensoftt-muhasebe"}
+
 # Models
 class User(BaseModel):
     model_config = ConfigDict(extra="ignore")
