@@ -236,6 +236,20 @@ const CustomersPage = () => {
             </div>
           ))}
         </div>
+
+        {/* Summary Footer */}
+        <div className="mt-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 border-2 border-blue-200">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-blue-900">Dip Toplam</h3>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-blue-900" data-testid="customers-total">
+                {customers.length} Cari
+              </p>
+              <p className="text-sm text-blue-700">Toplam Kayıt</p>
+            </div>
+          </div>
+        </div>
+        </>
       )}
     </div>
   );
