@@ -150,6 +150,121 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Recent Activities Section */}
+      <div className="mt-8">
+        <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <Clock size={24} className="text-blue-600" />
+          Son Eklenenler
+        </h3>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Customers */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <Users size={18} className="text-blue-600" />
+              Son Cariler
+            </h4>
+            {recentItems.customers.length === 0 ? (
+              <p className="text-sm text-slate-500">Henüz cari yok</p>
+            ) : (
+              <div className="space-y-3">
+                {recentItems.customers.map((customer) => (
+                  <div
+                    key={customer.id}
+                    className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
+                    data-testid="recent-customer"
+                  >
+                    <p className="font-semibold text-slate-900 text-sm">{customer.name}</p>
+                    <p className="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                      <Calendar size={12} />
+                      {format(new Date(customer.created_at), 'dd MMM yyyy HH:mm', { locale: tr })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Recent Payments */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <TrendingUp size={18} className="text-green-600" />
+              Son Ödemeler
+            </h4>
+            {recentItems.payments.length === 0 ? (
+              <p className="text-sm text-slate-500">Henüz ödeme yok</p>
+            ) : (
+              <div className="space-y-3">
+                {recentItems.payments.map((payment) => (
+                  <div
+                    key={payment.id}
+                    className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
+                    data-testid="recent-payment"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-semibold text-slate-900 text-sm">{payment.customer_name}</p>
+                        <p className="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                          <Calendar size={12} />
+                          {format(new Date(payment.created_at), 'dd MMM yyyy', { locale: tr })}
+                        </p>
+                      </div>
+                      <span className={`text-sm font-bold ${
+                        payment.payment_type === 'alacak' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {payment.amount.toFixed(2)} ₺
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Recent Transactions */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <Wallet size={18} className="text-purple-600" />
+              Son Kasa İşlemleri
+            </h4>
+            {recentItems.transactions.length === 0 ? (
+              <p className="text-sm text-slate-500">Henüz işlem yok</p>
+            ) : (
+              <div className="space-y-3">
+                {recentItems.transactions.map((transaction) => (
+                  <div
+                    key={transaction.id}
+                    className="p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
+                    data-testid="recent-transaction"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="font-semibold text-slate-900 text-sm">{transaction.description}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${
+                            transaction.type === 'gelir' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                          }`}>
+                            {transaction.type === 'gelir' ? 'Gelir' : 'Gider'}
+                          </span>
+                          <span className="text-xs text-slate-500">
+                            {transaction.payment_method === 'nakit' ? 'Nakit' : 'POS'}
+                          </span>
+                        </div>
+                      </div>
+                      <span className={`text-sm font-bold ${
+                        transaction.type === 'gelir' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {transaction.type === 'gelir' ? '+' : '-'}{transaction.amount.toFixed(2)} ₺
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
