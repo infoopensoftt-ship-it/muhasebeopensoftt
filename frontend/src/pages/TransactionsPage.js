@@ -252,101 +252,65 @@ const TransactionsPage = () => {
               )}
             </DialogTitle>
           </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="type">İşlem Türü *</Label>
-                <Select
-                  value={formData.type}
-                  onValueChange={(value) => setFormData({ ...formData, type: value })}
-                >
-                  <SelectTrigger data-testid="transaction-type-select">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gelir">Gelir</SelectItem>
-                    <SelectItem value="gider">Gider</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="payment_method">Ödeme Yöntemi *</Label>
-                <Select
-                  value={formData.payment_method}
-                  onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
-                >
-                  <SelectTrigger data-testid="transaction-method-select">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="nakit">Nakit</SelectItem>
-                    <SelectItem value="pos">POS</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="amount">Tutar (₺) *</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  placeholder="0.00"
-                  data-testid="transaction-amount-input"
-                />
-              </div>
-              <div>
-                <Label htmlFor="description">Açıklama *</Label>
-                <Input
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="İşlem açıklaması"
-                  data-testid="transaction-description-input"
-                />
-              </div>
-              <div>
-                <Label htmlFor="transaction_date">Tarih *</Label>
-                <Input
-                  id="transaction_date"
-                  type="date"
-                  value={formData.transaction_date}
-                  onChange={(e) => setFormData({ ...formData, transaction_date: e.target.value })}
-                  data-testid="transaction-date-input"
-                />
-              </div>
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="transaction-submit-btn">
-                Ekle
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Balance Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium opacity-90">Nakit</h3>
-            <Banknote size={24} />
-          </div>
-          <p className="text-3xl font-bold" data-testid="cash-balance-card">{balance.cashBalance.toFixed(2)} ₺</p>
-        </div>
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium opacity-90">POS</h3>
-            <CreditCard size={24} />
-          </div>
-          <p className="text-3xl font-bold" data-testid="pos-balance-card">{balance.posBalance.toFixed(2)} ₺</p>
-        </div>
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium opacity-90">Toplam Bakiye</h3>
-            <TrendingUp size={24} />
-          </div>
-          <p className="text-3xl font-bold" data-testid="total-balance-card">{balance.total.toFixed(2)} ₺</p>
-        </div>
-      </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input type="hidden" value={formData.type} />
+            <div>
+              <Label htmlFor="payment_method">Ödeme Yöntemi *</Label>
+              <Select
+                value={formData.payment_method}
+                onValueChange={(value) => setFormData({ ...formData, payment_method: value })}
+              >
+                <SelectTrigger data-testid="transaction-method-select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="nakit">Nakit</SelectItem>
+                  <SelectItem value="pos">POS</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="amount">Tutar (₺) *</Label>
+              <Input
+                id="amount"
+                type="number"
+                step="0.01"
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                placeholder="0.00"
+                data-testid="transaction-amount-input"
+              />
+            </div>
+            <div>
+              <Label htmlFor="description">Açıklama *</Label>
+              <Input
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="İşlem açıklaması"
+                data-testid="transaction-description-input"
+              />
+            </div>
+            <div>
+              <Label htmlFor="transaction_date">Tarih *</Label>
+              <Input
+                id="transaction_date"
+                type="date"
+                value={formData.transaction_date}
+                onChange={(e) => setFormData({ ...formData, transaction_date: e.target.value })}
+                data-testid="transaction-date-input"
+              />
+            </div>
+            <Button 
+              type="submit" 
+              className={`w-full ${formData.type === 'gelir' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+              data-testid="transaction-submit-btn"
+            >
+              {formData.type === 'gelir' ? 'Gelir Ekle' : 'Gider Ekle'}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Transactions Table */}
       {transactions.length === 0 ? (
