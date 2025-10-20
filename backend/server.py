@@ -25,7 +25,7 @@ db = client[os.environ['DB_NAME']]
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-SECRET_KEY = os.environ.get('SECRET_KEY', 'opensoftt-secret-key-2025')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'opensoftt-dev-secret-key')
 ALGORITHM = "HS256"
 
 # Create the main app without a prefix
