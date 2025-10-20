@@ -298,6 +298,12 @@ const ReportsPageEnhanced = () => {
                         <p className="text-blue-700">Toplam Gider</p>
                         <p className="text-2xl font-bold text-red-700">{previewData.data.totals.expense.toFixed(2)} ₺</p>
                       </div>
+                      <div className="bg-yellow-100 rounded-lg p-2">
+                        <p className="text-yellow-900 font-semibold">GELİR - GİDER</p>
+                        <p className="text-2xl font-bold text-yellow-900">
+                          {(previewData.data.totals.income - previewData.data.totals.expense).toFixed(2)} ₺
+                        </p>
+                      </div>
                       <div>
                         <p className="text-blue-700">Kasadaki Para</p>
                         <p className="text-2xl font-bold text-blue-900">{previewData.data.totals.cashBalance.toFixed(2)} ₺</p>
