@@ -144,22 +144,35 @@ class DashboardStats(BaseModel):
 
 # Initialize admin user
 async def init_admin():
-    admin = await db.users.find_one({"username": "admin"})
-    if not admin:
-        hashed_password = pwd_context.hash("admin123")
-        admin_user = User(
-            username="admin",
-            password=hashed_password,
-            role="admin"
-        )
-        doc = admin_user.model_dump()
-        doc['created_at'] = doc['created_at'].isoformat()
-        await db.users.insert_one(doc)
-        logging.info("Admin user created: admin/admin123")
+    try:
+        admin = await db.users.find_one({"username": "admin"})
+        if not admin:
+            hashed_password = pwd_context.hash("admin123")
+            admin_user = User(
+                username="admin",
+                password=hashed_password,
+                role="admin"
+            )
+            doc = admin_user.model_dump()
+            doc['created_at'] = doc['created_at'].isoformat()
+            await db.users.insert_one(doc)
+            logging.info("Admin user created: admin/admin123")
+        else:
+            logging.info("Admin user already exists")
+    except Exception as e:
+        logging.error(f"Error initializing admin user: {str(e)}")
+        # Don't fail startup if admin creation fails
+        pass
 
 @app.on_event("startup")
 async def startup_event():
-    await init_admin()
+    try:
+        logging.info("Application starting up...")
+        await init_admin()
+        logging.info("Startup complete")
+    except Exception as e:
+        logging.error(f"Startup error: {str(e)}")
+        # Continue startup even if initialization fails
 
 # Auth endpoints
 @api_router.post("/auth/login", response_model=LoginResponse)
