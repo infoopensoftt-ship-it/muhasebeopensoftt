@@ -178,6 +178,13 @@ async def init_admin():
 async def startup_event():
     try:
         logging.info("Application starting up...")
+        
+        # Test database connection first
+        db_ok = await test_db_connection()
+        if not db_ok:
+            logging.warning("Database connection issue, but continuing startup")
+        
+        # Initialize admin user
         await init_admin()
         logging.info("Startup complete")
     except Exception as e:
