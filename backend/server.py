@@ -43,6 +43,23 @@ ALGORITHM = "HS256"
 # Create the main app without a prefix
 app = FastAPI()
 
+# CORS configuration - MUST be before routes
+cors_origins = os.environ.get('CORS_ORIGINS', '*')
+if cors_origins == '*':
+    allow_origins = ['*']
+else:
+    allow_origins = [origin.strip() for origin in cors_origins.split(',')]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allow_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=600,
+)
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
