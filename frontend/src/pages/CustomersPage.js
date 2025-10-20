@@ -14,6 +14,7 @@ const API = `${BACKEND_URL}/api`;
 const CustomersPage = () => {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
+  const [customerSummaries, setCustomerSummaries] = useState({});
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
@@ -33,6 +34,20 @@ const CustomersPage = () => {
     try {
       const response = await axios.get(`${API}/customers`);
       setCustomers(response.data);
+      
+      // Fetch summaries for each customer
+      const summaries = {};
+      await Promise.all(
+        response.data.map(async (customer) => {
+          try {
+            const summaryRes = await axios.get(`${API}/customers/${customer.id}/summary`);
+            summaries[customer.id] = summaryRes.data;
+          } catch (error) {
+            console.error(`Failed to fetch summary for ${customer.id}`);
+          }
+        })
+      );
+      setCustomerSummaries(summaries);
     } catch (error) {
       toast.error('Cariler yüklenemedi');
     } finally {
