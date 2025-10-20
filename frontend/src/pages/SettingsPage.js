@@ -6,8 +6,8 @@ import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
 import { Key, Shield } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API } from '../config';
+
 
 const SettingsPage = ({ user }) => {
   const [passwordForm, setPasswordForm] = useState({

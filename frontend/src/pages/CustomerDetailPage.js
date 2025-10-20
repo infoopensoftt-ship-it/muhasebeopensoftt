@@ -10,8 +10,8 @@ import { ArrowLeft, Plus, Calendar, TrendingDown, CheckCircle, XCircle, CreditCa
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API } from '../config';
+
 
 const CustomerDetailPage = () => {
   const { id } = useParams();

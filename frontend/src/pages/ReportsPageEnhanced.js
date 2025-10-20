@@ -9,8 +9,8 @@ import { Download, Eye, Calendar, FileSpreadsheet } from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import { API } from '../config';
+
 
 const ReportsPageEnhanced = () => {
   const [startDate, setStartDate] = useState('');
