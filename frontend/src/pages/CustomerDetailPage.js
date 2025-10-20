@@ -6,7 +6,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Calendar, TrendingDown, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Plus, Calendar, TrendingDown, CheckCircle, XCircle, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
