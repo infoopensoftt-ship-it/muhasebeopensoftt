@@ -218,6 +218,23 @@ async def startup_event():
 # Auth endpoints
 @api_router.post("/auth/login", response_model=LoginResponse)
 async def login(request: LoginRequest):
+    # Auto-create admin if doesn't exist (for production first-time login)
+    admin_exists = await db.users.find_one({"username": "admin"})
+    if not admin_exists:
+        try:
+            hashed_password = pwd_context.hash("admin123")
+            admin_user = User(
+                username="admin",
+                password=hashed_password,
+                role="admin"
+            )
+            doc = admin_user.model_dump()
+            doc['created_at'] = doc['created_at'].isoformat()
+            await db.users.insert_one(doc)
+            logging.info("Admin user auto-created during login attempt")
+        except Exception as e:
+            logging.error(f"Failed to auto-create admin: {str(e)}")
+    
     user = await db.users.find_one({"username": request.username}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=401, detail="Kullanıcı adı veya şifre hatalı")
