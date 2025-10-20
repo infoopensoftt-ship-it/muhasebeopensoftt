@@ -326,6 +326,42 @@ const PaymentsPage = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Summary Footer */}
+          <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 border-t-2 border-blue-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <p className="text-sm text-blue-700 mb-1">Toplam Alacak</p>
+                <p className="text-2xl font-bold text-green-700" data-testid="total-receivable">
+                  {payments
+                    .filter(p => p.payment_type === 'alacak')
+                    .reduce((sum, p) => sum + p.amount, 0)
+                    .toFixed(2)} ₺
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-blue-700 mb-1">Toplam Borç</p>
+                <p className="text-2xl font-bold text-red-700" data-testid="total-payable">
+                  {payments
+                    .filter(p => p.payment_type === 'borc')
+                    .reduce((sum, p) => sum + p.amount, 0)
+                    .toFixed(2)} ₺
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-blue-700 mb-1">Net Durum</p>
+                <p className="text-2xl font-bold text-blue-900" data-testid="net-position">
+                  {(payments
+                    .filter(p => p.payment_type === 'alacak')
+                    .reduce((sum, p) => sum + p.amount, 0) -
+                    payments
+                    .filter(p => p.payment_type === 'borc')
+                    .reduce((sum, p) => sum + p.amount, 0)
+                  ).toFixed(2)} ₺
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
