@@ -183,8 +183,9 @@ const CustomersPage = () => {
           <p className="text-slate-500">Henüz cari eklenmemiş</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {customers.map((customer) => (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {customers.map((customer) => (
             <div
               key={customer.id}
               className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-shadow"
