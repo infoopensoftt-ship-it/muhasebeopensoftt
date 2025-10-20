@@ -23,6 +23,16 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Test MongoDB connection on startup
+async def test_db_connection():
+    try:
+        await client.admin.command('ping')
+        logging.info("MongoDB connection successful")
+        return True
+    except Exception as e:
+        logging.error(f"MongoDB connection failed: {str(e)}")
+        return False
+
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.environ.get('SECRET_KEY', 'opensoftt-dev-secret-key')
