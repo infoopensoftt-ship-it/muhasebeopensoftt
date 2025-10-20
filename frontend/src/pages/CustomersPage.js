@@ -241,10 +241,10 @@ const CustomersPage = () => {
               {/* Borç/Alacak Özeti */}
               {customerSummaries[customer.id] && (
                 <div className="mb-3 p-3 bg-slate-50 rounded-lg">
-                  <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="grid grid-cols-3 gap-2 text-sm">
                     <div>
-                      <p className="text-slate-500 text-xs">Borç</p>
-                      <p className="font-bold text-red-600" data-testid="customer-debt">
+                      <p className="text-slate-500 text-xs">Toplam Borç</p>
+                      <p className="font-bold text-blue-600" data-testid="customer-total-debt">
                         {customerSummaries[customer.id].total_debt.toFixed(2)} ₺
                       </p>
                     </div>
@@ -252,6 +252,12 @@ const CustomersPage = () => {
                       <p className="text-slate-500 text-xs">Ödenen</p>
                       <p className="font-bold text-green-600" data-testid="customer-paid">
                         {customerSummaries[customer.id].total_paid.toFixed(2)} ₺
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-slate-500 text-xs">Kalan</p>
+                      <p className="font-bold text-red-600" data-testid="customer-remaining">
+                        {customerSummaries[customer.id].total_remaining.toFixed(2)} ₺
                       </p>
                     </div>
                   </div>
