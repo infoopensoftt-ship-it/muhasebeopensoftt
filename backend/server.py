@@ -366,18 +366,20 @@ async def get_customer_summary(customer_id: str):
     
     total_debt = 0
     total_paid = 0
+    total_remaining = 0
     
     for payment in payments:
+        paid_amount = payment.get('paid_amount', 0)
         if payment['payment_type'] == 'borc':
-            if payment['is_paid']:
-                total_paid += payment['amount']
-            else:
-                total_debt += payment['amount']
+            total_debt += payment['amount']
+            total_paid += paid_amount
+            total_remaining += (payment['amount'] - paid_amount)
     
     return {
         "customer": customer,
         "total_debt": total_debt,
         "total_paid": total_paid,
+        "total_remaining": total_remaining,
         "total_payments": len(payments)
     }
 
