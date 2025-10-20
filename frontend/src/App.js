@@ -7,7 +7,7 @@ import CustomersPage from "./pages/CustomersPage";
 import CustomerDetailPage from "./pages/CustomerDetailPage";
 import PaymentsPage from "./pages/PaymentsPage";
 import TransactionsPage from "./pages/TransactionsPage";
-import ReportsPage from "./pages/ReportsPage";
+import ReportsPageEnhanced from "./pages/ReportsPageEnhanced";
 import SettingsPage from "./pages/SettingsPage";
 import Layout from "./components/Layout";
 import { Toaster } from "./components/ui/sonner";
