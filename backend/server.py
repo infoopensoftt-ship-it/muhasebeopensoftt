@@ -693,7 +693,9 @@ async def export_to_excel(report_type: str, start_date: Optional[str] = None, en
         summary_rows.append({'Kategori': 'KASA DURUMU', 'Tutar': '', 'Tarih': '', 'Açıklama': ''})
         summary_rows.append({'Kategori': 'Toplam Gelir', 'Tutar': f'{total_income:.2f} ₺', 'Tarih': '', 'Açıklama': ''})
         summary_rows.append({'Kategori': 'Toplam Gider', 'Tutar': f'{total_expense:.2f} ₺', 'Tarih': '', 'Açıklama': ''})
-        summary_rows.append({'Kategori': 'Kasadaki Para', 'Tutar': f'{cash_balance:.2f} ₺', 'Tarih': '', 'Açıklama': 'Gelir - Gider'})
+        summary_rows.append({'Kategori': 'GELİR - GİDER FARKI', 'Tutar': f'{(total_income - total_expense):.2f} ₺', 'Tarih': '', 'Açıklama': 'Net kasa kazancı/kaybı'})
+        summary_rows.append({'Kategori': 'Kasadaki Para', 'Tutar': f'{cash_balance:.2f} ₺', 'Tarih': '', 'Açıklama': 'Güncel kasa bakiyesi'})
+        summary_rows.append({'Kategori': '', 'Tutar': '', 'Tarih': '', 'Açıklama': ''})
         summary_rows.append({'Kategori': 'NET MALİ DURUM', 'Tutar': f'{(cash_balance + total_receivable - total_payable):.2f} ₺', 'Tarih': '', 'Açıklama': 'Kasa + Alacak - Borç'})
         
         # Add customer debts details
