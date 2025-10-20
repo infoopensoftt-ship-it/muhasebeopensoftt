@@ -204,7 +204,7 @@ const CustomerDetailPage = () => {
             <table className="w-full">
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Tarih</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Eklenme Tarihi</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Tür</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Tutar</th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase">Vade</th>
@@ -215,8 +215,11 @@ const CustomerDetailPage = () => {
               <tbody className="divide-y divide-slate-200">
                 {payments.map((payment) => (
                   <tr key={payment.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 text-sm text-slate-600">
-                      {format(new Date(payment.created_at), 'dd MMM yyyy', { locale: tr })}
+                    <td className="px-6 py-4 text-sm text-slate-900 font-semibold">
+                      <div className="flex items-center gap-1">
+                        <Calendar size={14} className="text-blue-600" />
+                        {format(new Date(payment.created_at), 'dd MMM yyyy HH:mm', { locale: tr })}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
