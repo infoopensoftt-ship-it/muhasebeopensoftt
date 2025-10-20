@@ -1,24 +1,56 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { TrendingUp, TrendingDown, Users, Wallet } from 'lucide-react';
+import { TrendingUp, TrendingDown, Users, Wallet, Clock, Calendar } from 'lucide-react';
+import { format } from 'date-fns';
+import { tr } from 'date-fns/locale';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
+  const [recentItems, setRecentItems] = useState({
+    customers: [],
+    payments: [],
+    transactions: []
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchStats();
+    fetchDashboardData();
   }, []);
 
-  const fetchStats = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const response = await axios.get(`${API}/dashboard/stats`);
-      setStats(response.data);
+      const [statsRes, customersRes, paymentsRes, transactionsRes] = await Promise.all([
+        axios.get(`${API}/dashboard/stats`),
+        axios.get(`${API}/customers`),
+        axios.get(`${API}/payments`),
+        axios.get(`${API}/transactions`)
+      ]);
+
+      setStats(statsRes.data);
+      
+      // Sort by created_at and get last 5
+      const sortedCustomers = customersRes.data
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, 5);
+      
+      const sortedPayments = paymentsRes.data
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, 5);
+      
+      const sortedTransactions = transactionsRes.data
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, 5);
+
+      setRecentItems({
+        customers: sortedCustomers,
+        payments: sortedPayments,
+        transactions: sortedTransactions
+      });
     } catch (error) {
-      console.error('Stats fetch error:', error);
+      console.error('Dashboard fetch error:', error);
     } finally {
       setLoading(false);
     }
