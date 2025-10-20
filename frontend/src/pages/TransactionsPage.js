@@ -17,6 +17,7 @@ const TransactionsPage = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [transactionType, setTransactionType] = useState('gelir'); // for button selection
   const [formData, setFormData] = useState({
     type: 'gelir',
     payment_method: 'nakit',
