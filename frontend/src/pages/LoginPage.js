@@ -57,7 +57,9 @@ const LoginPage = ({ onLogin }) => {
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
                 <Input
                   id="username"
+                  name="username"
                   type="text"
+                  autoComplete="username"
                   placeholder="admin"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -75,7 +77,9 @@ const LoginPage = ({ onLogin }) => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
                 <Input
                   id="password"
+                  name="password"
                   type="password"
+                  autoComplete="current-password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
