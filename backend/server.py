@@ -286,6 +286,56 @@ async def get_payments(customer_id: Optional[str] = None):
             payment['payment_date'] = datetime.fromisoformat(payment['payment_date'])
     return payments
 
+@api_router.get("/payments/upcoming")
+async def get_upcoming_payments(days: int = 7):
+    """Get payments due in next N days"""
+    today = datetime.now(timezone.utc)
+    future_date = today + timedelta(days=days)
+    
+    payments = await db.payments.find({
+        "is_paid": False,
+        "due_date": {
+            "$gte": today.isoformat(),
+            "$lte": future_date.isoformat()
+        }
+    }, {"_id": 0}).to_list(1000)
+    
+    for payment in payments:
+        if isinstance(payment['created_at'], str):
+            payment['created_at'] = datetime.fromisoformat(payment['created_at'])
+        if isinstance(payment['due_date'], str):
+            payment['due_date'] = datetime.fromisoformat(payment['due_date'])
+        if payment.get('payment_date') and isinstance(payment['payment_date'], str):
+            payment['payment_date'] = datetime.fromisoformat(payment['payment_date'])
+    
+    return payments
+
+@api_router.get("/customers/{customer_id}/summary")
+async def get_customer_summary(customer_id: str):
+    """Get customer's total debt and payment history"""
+    customer = await db.customers.find_one({"id": customer_id}, {"_id": 0})
+    if not customer:
+        raise HTTPException(status_code=404, detail="Cari bulunamadı")
+    
+    payments = await db.payments.find({"customer_id": customer_id}, {"_id": 0}).to_list(1000)
+    
+    total_debt = 0
+    total_paid = 0
+    
+    for payment in payments:
+        if payment['payment_type'] == 'borc':
+            if payment['is_paid']:
+                total_paid += payment['amount']
+            else:
+                total_debt += payment['amount']
+    
+    return {
+        "customer": customer,
+        "total_debt": total_debt,
+        "total_paid": total_paid,
+        "total_payments": len(payments)
+    }
+
 @api_router.post("/payments", response_model=Payment)
 async def create_payment(payment_data: PaymentCreate):
     payment = Payment(**payment_data.model_dump())
