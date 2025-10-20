@@ -77,6 +77,30 @@ const CustomerDetailPage = () => {
     }
   };
 
+  const handleMakePayment = async (e) => {
+    e.preventDefault();
+
+    if (!paymentAmount || parseFloat(paymentAmount) <= 0) {
+      toast.error('Geçerli bir tutar girin');
+      return;
+    }
+
+    try {
+      await axios.post(`${API}/payments/partial-payment`, {
+        payment_id: selectedPayment.id,
+        amount: parseFloat(paymentAmount)
+      });
+
+      toast.success('Ödeme kaydedildi');
+      setPaymentDialogOpen(false);
+      setPaymentAmount('');
+      setSelectedPayment(null);
+      fetchCustomerData();
+    } catch (error) {
+      toast.error('Ödeme kaydedilemedi');
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-12">Yükleniyor...</div>;
   }
