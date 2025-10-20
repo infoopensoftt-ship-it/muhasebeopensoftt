@@ -511,39 +511,90 @@ async def export_to_excel(report_type: str, start_date: Optional[str] = None, en
     elif report_type == "summary":
         # Generate comprehensive summary report
         customers = await db.customers.find({}, {"_id": 0}).to_list(10000)
-        payments = await db.payments.find({}, {"_id": 0}).to_list(10000)
-        transactions = await db.transactions.find({}, {"_id": 0}).to_list(10000)
+        
+        # Apply date filter to payments and transactions if provided
+        payment_query = {}
+        transaction_query = {}
+        if start_date and end_date:
+            payment_query['created_at'] = {"$gte": start_date, "$lte": end_date}
+            transaction_query['created_at'] = {"$gte": start_date, "$lte": end_date}
+        
+        payments = await db.payments.find(payment_query, {"_id": 0}).to_list(10000)
+        transactions = await db.transactions.find(transaction_query, {"_id": 0}).to_list(10000)
         
         # Calculate totals
         total_receivable = sum(p['amount'] for p in payments if p['payment_type'] == 'alacak' and not p['is_paid'])
         total_payable = sum(p['amount'] for p in payments if p['payment_type'] == 'borc' and not p['is_paid'])
+        total_paid = sum(p['amount'] for p in payments if p['is_paid'])
         total_income = sum(t['amount'] for t in transactions if t['type'] == 'gelir')
         total_expense = sum(t['amount'] for t in transactions if t['type'] == 'gider')
         cash_balance = sum(t['amount'] if t['type'] == 'gelir' else -t['amount'] for t in transactions)
         
-        summary_data = {
-            'Kategori': [
-                'Toplam Cari Sayısı',
-                'Toplam Alacak',
-                'Toplam Borç',
-                'Net Alacak/Borç',
-                'Toplam Gelir',
-                'Toplam Gider',
-                'Kasadaki Para',
-                'Net Mali Durum'
-            ],
-            'Tutar': [
-                f'{len(customers)} Adet',
-                f'{total_receivable:.2f} ₺',
-                f'{total_payable:.2f} ₺',
-                f'{(total_receivable - total_payable):.2f} ₺',
-                f'{total_income:.2f} ₺',
-                f'{total_expense:.2f} ₺',
-                f'{cash_balance:.2f} ₺',
-                f'{(cash_balance + total_receivable - total_payable):.2f} ₺'
-            ]
-        }
-        df = pd.DataFrame(summary_data)
+        # Create detailed summary with customer debts
+        summary_rows = []
+        
+        # Add header
+        summary_rows.append({
+            'Kategori': 'GENEL DURUM',
+            'Tutar': '',
+            'Tarih': '',
+            'Açıklama': ''
+        })
+        
+        summary_rows.append({'Kategori': 'Toplam Cari Sayısı', 'Tutar': f'{len(customers)} Adet', 'Tarih': '', 'Açıklama': ''})
+        summary_rows.append({'Kategori': 'Toplam Alacak', 'Tutar': f'{total_receivable:.2f} ₺', 'Tarih': '', 'Açıklama': 'Ödenmemiş alacaklar'})
+        summary_rows.append({'Kategori': 'Toplam Borç', 'Tutar': f'{total_payable:.2f} ₺', 'Tarih': '', 'Açıklama': 'Ödenmemiş borçlar'})
+        summary_rows.append({'Kategori': 'Ödenen', 'Tutar': f'{total_paid:.2f} ₺', 'Tarih': '', 'Açıklama': 'Tamamlanan ödemeler'})
+        summary_rows.append({'Kategori': 'Kalan', 'Tutar': f'{(total_receivable - total_payable):.2f} ₺', 'Tarih': '', 'Açıklama': 'Alacak - Borç'})
+        
+        summary_rows.append({'Kategori': '', 'Tutar': '', 'Tarih': '', 'Açıklama': ''})
+        summary_rows.append({'Kategori': 'KASA DURUMU', 'Tutar': '', 'Tarih': '', 'Açıklama': ''})
+        summary_rows.append({'Kategori': 'Toplam Gelir', 'Tutar': f'{total_income:.2f} ₺', 'Tarih': '', 'Açıklama': ''})
+        summary_rows.append({'Kategori': 'Toplam Gider', 'Tutar': f'{total_expense:.2f} ₺', 'Tarih': '', 'Açıklama': ''})
+        summary_rows.append({'Kategori': 'Kasadaki Para', 'Tutar': f'{cash_balance:.2f} ₺', 'Tarih': '', 'Açıklama': 'Gelir - Gider'})
+        summary_rows.append({'Kategori': 'NET MALİ DURUM', 'Tutar': f'{(cash_balance + total_receivable - total_payable):.2f} ₺', 'Tarih': '', 'Açıklama': 'Kasa + Alacak - Borç'})
+        
+        # Add customer debts details
+        summary_rows.append({'Kategori': '', 'Tutar': '', 'Tarih': '', 'Açıklama': ''})
+        summary_rows.append({'Kategori': 'CARİ BORÇLARI DETAYI', 'Tutar': '', 'Tarih': '', 'Açıklama': ''})
+        
+        for customer in customers:
+            customer_debts = [p for p in payments if p['customer_id'] == customer['id'] and p['payment_type'] == 'borc' and not p['is_paid']]
+            if customer_debts:
+                summary_rows.append({'Kategori': f'{customer["name"]} - TOPLAM BORÇ', 'Tutar': f'{sum(d["amount"] for d in customer_debts):.2f} ₺', 'Tarih': '', 'Açıklama': ''})
+                for debt in customer_debts:
+                    summary_rows.append({
+                        'Kategori': f'  {customer["name"]}',
+                        'Tutar': f'{debt["amount"]:.2f} ₺',
+                        'Tarih': debt['created_at'] if isinstance(debt['created_at'], str) else debt['created_at'].isoformat(),
+                        'Açıklama': debt.get('description', '-')
+                    })
+        
+        # Add income details
+        summary_rows.append({'Kategori': '', 'Tutar': '', 'Tarih': '', 'Açıklama': ''})
+        summary_rows.append({'Kategori': 'GELİRLER DETAYI', 'Tutar': '', 'Tarih': '', 'Açıklama': ''})
+        
+        for transaction in [t for t in transactions if t['type'] == 'gelir']:
+            summary_rows.append({
+                'Kategori': 'Gelir',
+                'Tutar': f'{transaction["amount"]:.2f} ₺',
+                'Tarih': transaction['transaction_date'] if isinstance(transaction['transaction_date'], str) else transaction['transaction_date'].isoformat(),
+                'Açıklama': f"{transaction['description']} ({transaction['payment_method']})"
+            })
+        
+        # Add expense details
+        summary_rows.append({'Kategori': '', 'Tutar': '', 'Tarih': '', 'Açıklama': ''})
+        summary_rows.append({'Kategori': 'GİDERLER DETAYI', 'Tutar': '', 'Tarih': '', 'Açıklama': ''})
+        
+        for transaction in [t for t in transactions if t['type'] == 'gider']:
+            summary_rows.append({
+                'Kategori': 'Gider',
+                'Tutar': f'{transaction["amount"]:.2f} ₺',
+                'Tarih': transaction['transaction_date'] if isinstance(transaction['transaction_date'], str) else transaction['transaction_date'].isoformat(),
+                'Açıklama': f"{transaction['description']} ({transaction['payment_method']})"
+            })
+        
+        df = pd.DataFrame(summary_rows)
     
     else:
         raise HTTPException(status_code=400, detail="Geçersiz rapor tipi")
