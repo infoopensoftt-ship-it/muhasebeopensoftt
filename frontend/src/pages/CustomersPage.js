@@ -190,8 +190,9 @@ const CustomersPage = () => {
             {customers.map((customer) => (
             <div
               key={customer.id}
-              className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-shadow"
+              className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-shadow cursor-pointer"
               data-testid={`customer-card-${customer.id}`}
+              onClick={() => navigate(`/customers/${customer.id}`)}
             >
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-bold text-slate-900" data-testid="customer-name">{customer.name}</h3>
