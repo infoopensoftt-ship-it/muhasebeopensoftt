@@ -133,18 +133,30 @@ const Dashboard = () => {
         </div>
 
         <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-md p-6 text-white">
-          <h3 className="text-lg font-bold mb-4">Hızlı Özet</h3>
+          <h3 className="text-lg font-bold mb-4">Toplam Mali Durum</h3>
           <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="opacity-90">Net Durum</span>
-              <span className="font-bold" data-testid="net-position">
-                {((stats?.total_receivable || 0) - (stats?.total_payable || 0)).toFixed(2)} ₺
+            <div className="flex justify-between items-center border-b border-blue-400 pb-2">
+              <span className="opacity-90">Kasadaki Para</span>
+              <span className="font-bold">
+                {(stats?.total_balance || 0).toFixed(2)} ₺
               </span>
             </div>
-            <div className="flex justify-between">
-              <span className="opacity-90">Toplam Varlık</span>
-              <span className="font-bold">
-                {((stats?.total_balance || 0) + (stats?.total_receivable || 0)).toFixed(2)} ₺
+            <div className="flex justify-between items-center border-b border-blue-400 pb-2">
+              <span className="opacity-90">Alacaklar (+)</span>
+              <span className="font-bold text-green-300">
+                +{(stats?.total_receivable || 0).toFixed(2)} ₺
+              </span>
+            </div>
+            <div className="flex justify-between items-center border-b border-blue-400 pb-2">
+              <span className="opacity-90">Borçlar (-)</span>
+              <span className="font-bold text-red-300">
+                -{(stats?.total_payable || 0).toFixed(2)} ₺
+              </span>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t-2 border-white">
+              <span className="font-bold text-lg">NET DURUM</span>
+              <span className="font-bold text-2xl" data-testid="total-net-position">
+                {((stats?.total_balance || 0) + (stats?.total_receivable || 0) - (stats?.total_payable || 0)).toFixed(2)} ₺
               </span>
             </div>
           </div>
