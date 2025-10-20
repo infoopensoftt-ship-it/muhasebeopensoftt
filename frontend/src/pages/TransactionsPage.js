@@ -91,19 +91,36 @@ const TransactionsPage = () => {
   const calculateBalance = () => {
     let cashBalance = 0;
     let posBalance = 0;
+    let totalIncome = 0;
+    let totalExpense = 0;
 
     transactions.forEach((t) => {
       let amount = t.amount;
-      if (t.type === 'gider') amount = -amount;
-
-      if (t.payment_method === 'nakit') {
-        cashBalance += amount;
-      } else if (t.payment_method === 'pos') {
-        posBalance += amount;
+      
+      if (t.type === 'gelir') {
+        totalIncome += amount;
+        if (t.payment_method === 'nakit') {
+          cashBalance += amount;
+        } else if (t.payment_method === 'pos') {
+          posBalance += amount;
+        }
+      } else {
+        totalExpense += amount;
+        if (t.payment_method === 'nakit') {
+          cashBalance -= amount;
+        } else if (t.payment_method === 'pos') {
+          posBalance -= amount;
+        }
       }
     });
 
-    return { cashBalance, posBalance, total: cashBalance + posBalance };
+    return { 
+      cashBalance, 
+      posBalance, 
+      total: cashBalance + posBalance,
+      totalIncome,
+      totalExpense 
+    };
   };
 
   const balance = calculateBalance();
