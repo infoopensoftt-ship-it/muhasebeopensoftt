@@ -302,6 +302,36 @@ const TransactionsPage = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Summary Footer */}
+          <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 border-t-2 border-blue-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <p className="text-sm text-blue-700 mb-1">Toplam Gelir</p>
+                <p className="text-2xl font-bold text-green-700" data-testid="total-income">
+                  {transactions
+                    .filter(t => t.type === 'gelir')
+                    .reduce((sum, t) => sum + t.amount, 0)
+                    .toFixed(2)} ₺
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-blue-700 mb-1">Toplam Gider</p>
+                <p className="text-2xl font-bold text-red-700" data-testid="total-expense">
+                  {transactions
+                    .filter(t => t.type === 'gider')
+                    .reduce((sum, t) => sum + t.amount, 0)
+                    .toFixed(2)} ₺
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-blue-700 mb-1">Net Bakiye</p>
+                <p className="text-2xl font-bold text-blue-900" data-testid="net-balance">
+                  {balance.total.toFixed(2)} ₺
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
