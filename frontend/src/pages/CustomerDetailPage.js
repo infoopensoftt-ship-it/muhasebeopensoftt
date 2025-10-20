@@ -20,6 +20,9 @@ const CustomerDetailPage = () => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [paymentAmount, setPaymentAmount] = useState('');
   const [formData, setFormData] = useState({
     amount: '',
     due_date: '',
