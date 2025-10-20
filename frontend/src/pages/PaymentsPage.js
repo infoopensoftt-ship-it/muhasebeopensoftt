@@ -155,7 +155,7 @@ const PaymentsPage = () => {
                   <SelectTrigger data-testid="payment-customer-select">
                     <SelectValue placeholder="Cari seçin" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper" className="z-[9999]">
                     {customers.map((customer) => (
                       <SelectItem key={customer.id} value={customer.id}>
                         {customer.name}
