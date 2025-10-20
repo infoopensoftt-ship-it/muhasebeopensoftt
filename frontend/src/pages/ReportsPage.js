@@ -59,6 +59,15 @@ const ReportsPage = () => {
       color: 'from-purple-500 to-purple-600',
       testId: 'export-transactions'
     },
+    {
+      title: 'Genel Özet Raporu',
+      description: 'Tüm mali durumunuzu tek raporda görün',
+      type: 'summary',
+      filename: 'genel_ozet_raporu',
+      icon: FileSpreadsheet,
+      color: 'from-orange-500 to-orange-600',
+      testId: 'export-summary'
+    },
   ];
 
   return (
