@@ -445,7 +445,16 @@ async def get_dashboard_stats():
 
 # Excel export
 @api_router.get("/reports/export")
-async def export_to_excel(report_type: str):
+async def export_to_excel(report_type: str, start_date: Optional[str] = None, end_date: Optional[str] = None):
+    query = {}
+    
+    # Add date filter if provided
+    if start_date and end_date:
+        query['created_at'] = {
+            "$gte": start_date,
+            "$lte": end_date
+        }
+    
     if report_type == "customers":
         customers = await db.customers.find({}, {"_id": 0}).to_list(10000)
         df = pd.DataFrame(customers)
@@ -454,18 +463,55 @@ async def export_to_excel(report_type: str):
             df.columns = ['Cari Adı', 'Telefon', 'Adres', 'Vergi No', 'Notlar']
     
     elif report_type == "payments":
-        payments = await db.payments.find({}, {"_id": 0}).to_list(10000)
+        payments = await db.payments.find(query, {"_id": 0}).to_list(10000)
         df = pd.DataFrame(payments)
         if len(df) > 0:
             df = df[['customer_name', 'amount', 'payment_type', 'is_paid', 'due_date', 'description']]
             df.columns = ['Cari', 'Tutar', 'Tür', 'Ödendi', 'Vade Tarihi', 'Açıklama']
     
     elif report_type == "transactions":
-        transactions = await db.transactions.find({}, {"_id": 0}).to_list(10000)
+        transactions = await db.transactions.find(query, {"_id": 0}).to_list(10000)
         df = pd.DataFrame(transactions)
         if len(df) > 0:
             df = df[['type', 'payment_method', 'amount', 'description', 'transaction_date']]
             df.columns = ['Tür', 'Ödeme Yöntemi', 'Tutar', 'Açıklama', 'Tarih']
+    
+    elif report_type == "summary":
+        # Generate comprehensive summary report
+        customers = await db.customers.find({}, {"_id": 0}).to_list(10000)
+        payments = await db.payments.find({}, {"_id": 0}).to_list(10000)
+        transactions = await db.transactions.find({}, {"_id": 0}).to_list(10000)
+        
+        # Calculate totals
+        total_receivable = sum(p['amount'] for p in payments if p['payment_type'] == 'alacak' and not p['is_paid'])
+        total_payable = sum(p['amount'] for p in payments if p['payment_type'] == 'borc' and not p['is_paid'])
+        total_income = sum(t['amount'] for t in transactions if t['type'] == 'gelir')
+        total_expense = sum(t['amount'] for t in transactions if t['type'] == 'gider')
+        cash_balance = sum(t['amount'] if t['type'] == 'gelir' else -t['amount'] for t in transactions)
+        
+        summary_data = {
+            'Kategori': [
+                'Toplam Cari Sayısı',
+                'Toplam Alacak',
+                'Toplam Borç',
+                'Net Alacak/Borç',
+                'Toplam Gelir',
+                'Toplam Gider',
+                'Kasadaki Para',
+                'Net Mali Durum'
+            ],
+            'Tutar': [
+                f'{len(customers)} Adet',
+                f'{total_receivable:.2f} ₺',
+                f'{total_payable:.2f} ₺',
+                f'{(total_receivable - total_payable):.2f} ₺',
+                f'{total_income:.2f} ₺',
+                f'{total_expense:.2f} ₺',
+                f'{cash_balance:.2f} ₺',
+                f'{(cash_balance + total_receivable - total_payable):.2f} ₺'
+            ]
+        }
+        df = pd.DataFrame(summary_data)
     
     else:
         raise HTTPException(status_code=400, detail="Geçersiz rapor tipi")
